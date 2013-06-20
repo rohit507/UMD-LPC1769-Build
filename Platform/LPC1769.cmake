@@ -53,4 +53,3 @@ set(CMAKE_C_COMPILER_FORCED TRUE)
 
 include_directories(../CMSISv2p00_LPC17xx/inc)
 link_directories(../CMSISv2p00_LPC17xx/lib)
-link_directories(../UMD_LPC1769/lib)

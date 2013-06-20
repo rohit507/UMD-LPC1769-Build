@@ -42,3 +42,4 @@ add_custom_target(flash
 
 add_custom_target(flash-halt
   COMMAND ${LPCXPRESSO_FLASH} -2 -flash-load="${FULL_OUTPUT_NAME}")
+
