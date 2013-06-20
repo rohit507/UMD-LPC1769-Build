@@ -1,5 +1,3 @@
-include_directories(../UMD_LPC1769/inc)
-
 add_definitions(
   -D__NEWLIB__
   -D__CODE_RED
@@ -42,7 +40,7 @@ set(FULL_OUTPUT_NAME ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_PROJECT_NAME}.axf)
 
 add_executable(${OUTPUT_NAME} ${SOURCES})
 set_target_properties(${OUTPUT_NAME} PROPERTIES LINKER_LANGUAGE C)
-target_link_libraries(${OUTPUT_NAME} CMSISv2p00_LPC17xx UMD_LPC1769)
+target_link_libraries(${OUTPUT_NAME} CMSISv2p00_LPC17xx )
 
 # Separate debug symbols into their own file
 add_custom_command(
