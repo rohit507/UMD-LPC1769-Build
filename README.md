@@ -1,8 +1,7 @@
-UMD LPC1796 Examples
+GNU LPC1796 Examples
 ======
 
-This repositoty contains a CMake build system, a simple example
-library (UMDLPC) and a number of example projects for the LPC1769.
+This repository contains a CMake build system, for the LPC1769.
 
 CMake (a sort of build system that produces other build systems) is
 used to allow building of this repository in many different operating
@@ -27,16 +26,19 @@ library).
 Setup
 -------
 
-First have CMake (version >= 2.4.8), and LPCXpresso (version 5)
+First have CMake (version >= 2.8.11), git and LPCXpresso (version 5)
 installed.
 
 Then a full install, build of the libraries and build of a project
-(for example, AnalogOutDMA) should look like:
+should look like:
 
     # Download project
-    git clone git://github.com/gpittarelli/umd-lpc1769.git
+    git clone git://github.com/rohit507/GNU-LPC-Core.git
+    # Get submodules
+    git submodule init
+    git submodule update
     # Run setup script
-    cd umd-lpc1769/_setup
+    cd GNU-LPC-Core/_setup
     cmake . -DLPCXPRESSO_DIR=/usr/local/lpcxpresso_5.1.2_2065/lpcxpresso/
     # Extract CMSIS library .zip
     cd ..
@@ -45,13 +47,9 @@ Then a full install, build of the libraries and build of a project
     cd CMSISv2p00_LPC17xx/
     cmake . -G "Unix Makefiles"
     make
-    # Build UMDLPC library
-    cd ../UMD_LPC1769/
-    cmake . -G "Unix Makefiles"
-    make
     # We're finally ready to build a project:
     cd ..
-    cd AnalogOutDMA/
+    cd Skeleton/
     cmake . -G "Unix Makefiles"
     make
     # Rebuilds do not require running cmake again, just make
@@ -60,21 +58,27 @@ A more in depth explanation of the steps being taken:
 
  1. First clone this repository.
 
- 2. In a terminal in the `_setup` directory of this repository, run:
+        git clone git://github.com/rohit507/GNU-LPC-Core.git
+
+ 2. Clone the submodules in this repository.
+
+        git submodule init
+        git submodule update
+
+ 3. In a terminal in the `_setup` directory of this repository, run:
 
         cmake . -DLPCXPRESSO_DIR=<lpcxpresso_dir>
 
-  Where `lpcxpresso_dir` is the root directory of your LPCXpresso
-  installation (eg `/usr/local/lpcxpresso_5.1.2_2065/lpcxpresso`).
+    Where `lpcxpresso_dir` is the root directory of your LPCXpresso
+    installation (eg `/usr/local/lpcxpresso_5.1.2_2065/lpcxpresso`).
 
- 3. Extract the `CMSISv2p00_LPC17xx.zip` file into the folder of the
+ 4. Extract the `CMSISv2p00_LPC17xx.zip` file into the folder of the
     same name.
 
         unzip CMSISv2p00_LPC17xx.zip -d CMSISv2p00_LPC17xx/
 
  4. Genreate a build system for CMSIS and UMDLPC libraries, by running
-    CMake in both the `CMSISv2p00_LPC17xx` directory and the
-    `UMD_LPC1769` directories:
+    CMake in both the `CMSISv2p00_LPC17xx` directory:
 
         cmake . -G "Unix Makefiles"
 
@@ -84,14 +88,15 @@ A more in depth explanation of the steps being taken:
       cmake with no parameters to get a list of all available build
       system targets. (The -G "Unix Makefiles" may be the default for
       Unix systems, but I would recommend explicity writing it out.)
-
+ 
     Note: If you get an error message here complaining that you did
     not configure the LPCXPRESO_DIR in step 2, double check that
     `LPCXpressoDir.cmake` was generated in the root directory of the
     repo. Open the file and check that the directory path points to a
-    version 5 installation of LPCXpresso.
+    version 5 installation of LPCXpresso. (Any version 5 should do
+    but 5.2.4 and 5.1.2 have been confirmed to work)
 
- 5. Build the CMSIS and UMDLPC libraries using your chosen build
+ 5. Build the CMSIS libraries using your chosen build
     system. With makefiles, just run make in both directories.
 
 To use a project, run CMake as above in the selected project
@@ -99,9 +104,15 @@ directory, build the project with your chosen build system, and then
 you can use LPCXpresso's flash utilities and gdb with your chosen
 build system (See [Targets](#targets)).
 
-The `Skeleton` directory inclues an example project which can be
-copied to create new projects. Remember to update the `CMakeLists.txt`
-file in each new project to reflect the new project's name.
+The [Skeleton](https://github.com/rohit507/GNU-LPC-Skeleton) submodule
+includes an example project which can be copied or forked to create new
+projects. (We recommend forking on github and including a new submodule
+as explained [here](http://git-scm.com/book/en/Git-Tools-Submodules).
+
+Remember to update the `CMakeLists.txt` file in each new project to
+reflect the new project's name, and the source files it contains. Once
+completed you can run `cmake . -G "Unix Makefiles"` to generate the
+necessary makefiles.
 
 Targets
 ------
@@ -137,7 +148,7 @@ The following targets are provided:
 If using makefiles, these are directly accessible as `make lst`,
 etc. (run in the root directory of the desired project). If you are
 using a build system based around IDE project files (such as Eclipse
-or Visual Studio), the targets should be accesible from a menu.
+or Visual Studio), the targets should be accessible from a menu.
 
 Typical Workflows
 ------
@@ -147,7 +158,24 @@ under the assumption that a Makefile build system is being used, but
 the calls to `make` can all be substituted with the appropriate action
 in any other chosen build system.
 
-### Start a new project:
+### Start a new project (by forking):
+
+First go [here](https://github.com/rohit507/GNU-LPC-Skeleton) and fork
+a new project. 
+
+    $ git submodule add http://github.com/yourname/newprojectname
+    $ git add .gitmodules
+    $ git commit -m "Added a submodule for NewProjectName"
+    $ git submodule update
+    $ cd NewProjectName
+    $ mv src/main.c src/newproject.c 
+    $ $EDITOR CMakeLists.txt
+      # Edit CMakeLists.txt, changing the project name, and renaming
+        main.c -> newproject.c in SOURCES list
+    $ cmake . -G "Unix Makfiles"
+    $ make
+
+### Start a new project (by copying):
 
     $ cp -R Skeleton/ NewProjectName
     $ cd NewProjectName
@@ -155,7 +183,6 @@ in any other chosen build system.
     $ $EDITOR CMakeLists.txt
       # Edit CMakeLists.txt, changing the project name, and renaming
         main.c -> newproject.c in SOURCES list
-    $
     $ cmake . -G "Unix Makfiles"
     $ make
 
@@ -166,7 +193,7 @@ in any other chosen build system.
 
 ### Enabling semihosting for a project
 
-Open a project's CMakeLists.txt file and uncomment the following line:
+Open a project's CMakeLists.txt file and uncomment the following lineN:
 
     set(SEMIHOSTING_ENABLED True)
 
@@ -208,7 +235,7 @@ CMakeLists.txt and add the file to the `SOURCES` variable.
     (gdb) load
     (gdb) c
 
-    # Make changes to the program
+    # Make changes to the programU
 
     (gdb) make
     (gdb) load
@@ -231,7 +258,6 @@ Compiler flags:
     -D__NEWLIB__
     -D__USE_CMSIS=CMSISv2p00_LPC17xx
     -I..\CMSISv2p00_LPC17xx\inc
-    -I..\UMD_LPC1769\inc
     -Wall
     -Wshadow
     -Wcast-qual
@@ -326,7 +352,7 @@ Next the following commands are run:
     set arm force-mode thumb
     target extended-remote | crt_emu_cm3_nxp -2 -g -wire=<wire_type> \
                                       -pLPC1769 -vendor=NXP
-    mon semihosting ena
+    mon semihosting enable
 
 `wire_type` is `hid` on Windows 7, and `winusb` on most other systems
 (older Windows versions, Linux, etc.)
@@ -334,3 +360,14 @@ Next the following commands are run:
 These commands can be automated by placing them in a script file and
 specifying it with `--command=<script_file>`, or running each command
 with `--eval-command=<command>`.
+
+### Troubleshooting
+
+**`make flash` fails because of a missing library:**
+
+All the libraries required for the LPCXpresso tools are in the same 
+directory as the executables. Make sure applications can find shared
+libraries in their home directories. Alternately make sure your 
+`LD_LIBRARY_PATH` environment variable or your `/etc/ld.so.conf` config
+file contains the LPCXpresso tool binaries directory. (normally
+`/usr/local/<LPCXressoDir>/lpcxpresso/tools/bin/`)
